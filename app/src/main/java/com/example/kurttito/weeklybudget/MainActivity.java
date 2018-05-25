@@ -225,9 +225,26 @@ public class MainActivity extends AppCompatActivity {
         WeeklyBudget_Feed = (TextView)findViewById(R.id.textView_weeklyBudget);
     }
 
+    //Float Version of Spend Method
     private float Spend(float intotal, float insubamount){
         intotal = intotal - insubamount;
         return intotal;
+    }
+
+    /**
+     * String Version of Spend Method
+     * This will be more useful for this application
+     *  because TextViews reads only strings and the combined
+     *   use of SharedPreferences
+     **/
+
+    private String Str_Spend(String intotal, String insubamount){
+
+        float total = Float.parseFloat(intotal);
+        float subamount = Float.parseFloat(insubamount);
+        total = total - subamount;
+
+        return String.format("$ %.2f", total);
     }
 
 }
