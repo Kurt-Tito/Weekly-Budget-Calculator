@@ -8,10 +8,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.*;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class InitiateActivity extends AppCompatActivity {
@@ -24,25 +22,27 @@ public class InitiateActivity extends AppCompatActivity {
     public static String totalWeeks;
 
     public static float totalBudget_float, totalWeek_float, weeklyBudget_float;
+    private SharedPreferences sharedPref;
+    private SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_initiate);
 
-        SharedPreferences load = getSharedPreferences("userInput", Context.MODE_PRIVATE);
-        totalBudget = load.getString("totalBudget", "");
-        totalWeeks = load.getString("totalWeeks", "");
+        sharedPref = getSharedPreferences("userInput", Context.MODE_PRIVATE);
+        totalBudget = sharedPref.getString("totalBudget", "");
+        totalWeeks = sharedPref.getString("totalWeeks", "");
 
         setUP();
 
-        if(totalBudget == "" || totalWeeks == "")
+        if(totalBudget != "" || totalWeeks != "")
         {
-            //startActivity(new Intent(InitiateActivity.this, MainActivity.class));
-            Toast.makeText(InitiateActivity.this, "Data NOT found", Toast.LENGTH_LONG);
-        }
-        else{
             startActivity(new Intent(InitiateActivity.this, MainActivity.class));
+        }
+        else
+        {
+            System.out.println("DATA NOT FOUND, CREATING NEW DATA");
         }
 
         next.setOnClickListener(new View.OnClickListener(){
@@ -59,8 +59,7 @@ public class InitiateActivity extends AppCompatActivity {
                      * Save and Write Preferences Here
                      */
 
-                    SharedPreferences sharedPref = getSharedPreferences("userInput", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor = sharedPref.edit();
                     editor.putString("totalBudget", input_total_budget.getText().toString());
                     editor.putString("totalWeeks", input_total_weeks.getText().toString());
                     editor.apply();
@@ -81,8 +80,6 @@ public class InitiateActivity extends AppCompatActivity {
                     });
 
                     builder.show();
-
-//                    System.out.println(totalBudget +"& " +totalWeeks);
                 }
 
             }

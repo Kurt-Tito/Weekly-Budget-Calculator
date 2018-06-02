@@ -3,6 +3,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.view.*;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
     private Button enter;
     private Button decimal;
 
+    private Button next;
+
     private TextView InputFeed;
 
     private TextView TotalBudget_Feed;
@@ -35,10 +39,12 @@ public class MainActivity extends AppCompatActivity {
 
     String InputFeed_str;
     float spent;
-    //float totalBudget_float, totalWeek_float;
 
     public static float weeklyBudget_float;
     public static float newtotal;
+
+    private SharedPreferences sharedPref;
+    private SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,31 +149,33 @@ public class MainActivity extends AppCompatActivity {
          * Load SharedPref Data Here
          */
 
-        SharedPreferences sharedPref = getSharedPreferences("userInput", Context.MODE_PRIVATE);
+        sharedPref = getSharedPreferences("userInput", Context.MODE_PRIVATE);
+        editor = sharedPref.edit();
+
         String totalBudget = sharedPref.getString("totalBudget", "");
         String totalWeeks = sharedPref.getString("totalWeeks", "");
 
-        weeklyBudget_float = Float.parseFloat(totalBudget) / Float.parseFloat(totalWeeks); // WEEKLY BUDGET
+        //String weeklyBudget;
 
-        TotalBudget_Feed.setText(totalBudget); //how to get public variable of another activity
+        if(sharedPref.getString("weeklyBudget", "") == "")
+        {
+            weeklyBudget_float = Float.parseFloat(totalBudget) / Float.parseFloat(totalWeeks); // WEEKLY BUDGET
+            editor.putString("weeklyBudget", String.valueOf(weeklyBudget_float));
+            editor.apply();
+        }
+        else
+        {
+            String weeklyBudget = sharedPref.getString("weeklyBudget", "");
+            weeklyBudget_float = Float.parseFloat((weeklyBudget));
+        }
+
+        float totalBudget_flt = Float.parseFloat(sharedPref.getString("totalBudget", "")) - weeklyBudget_float;
+        Toast.makeText(MainActivity.this, "-" +String.format("%.2f", weeklyBudget_float), Toast.LENGTH_SHORT).show();
+
+        TotalBudget_Feed.setText(String.format("$ %.2f", totalBudget_flt)); //how to get public variable of another activity
         TotalWeeks_Feed.setText(totalWeeks);
 
         WeeklyBudget_Feed.setText(String.format("$ %.2f", weeklyBudget_float));
-
-//        InputFeed.setOnKeyListener(new View.OnKeyListener() {
-//            @Override
-//            public boolean onKey(View v, int keyCode, KeyEvent event) {
-//                {
-//
-//                    if((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER))
-//                    {
-//                        TotalBudget_Feed.setText("$" +InputFeed.getText().toString());
-//                        return true;
-//                    }
-//                    return false;
-//                }
-//            }
-//        });
 
         enter.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,6 +189,10 @@ public class MainActivity extends AppCompatActivity {
                     newtotal = Spend(weeklyBudget_float, spent);
                     WeeklyBudget_Feed.setText(String.format("$ %.2f", newtotal));
                     weeklyBudget_float = newtotal;
+
+                    editor.putString("weeklyBudget", String.valueOf(weeklyBudget_float));
+                    editor.apply();
+
                     InputFeed.setText("");
 
                 }catch (Exception e){
@@ -202,6 +214,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View w) {
+                nextWeek();
+            }
+        });
+
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        ActivityCompat.finishAffinity(this);
     }
 
     private void setupUIViews(){
@@ -218,8 +243,10 @@ public class MainActivity extends AppCompatActivity {
         clear = (Button)findViewById(R.id.btn_clear);
         decimal = (Button)findViewById(R.id.btn_decimal);
         enter = (Button)findViewById(R.id.btn_enter);
-        InputFeed = (TextView) findViewById(R.id.TextView_InputFeed);
 
+        next = (Button)findViewById(R.id.btn_next);
+
+        InputFeed = (TextView) findViewById(R.id.TextView_InputFeed);
         TotalBudget_Feed = (TextView) findViewById(R.id.textView_totalBudget);
         TotalWeeks_Feed = (TextView)findViewById(R.id.textView_totalWeeks);
         WeeklyBudget_Feed = (TextView)findViewById(R.id.textView_weeklyBudget);
@@ -245,6 +272,37 @@ public class MainActivity extends AppCompatActivity {
         total = total - subamount;
 
         return String.format("$ %.2f", total);
+    }
+
+    private void nextWeek()
+    {
+        String newTotalBudget = sharedPref.getString("totalBudget", "");
+        String newTotalWeeks = sharedPref.getString("totalWeeks", "");
+        String newWeeklyBudget = sharedPref.getString("weeklyBudget", "");
+
+        float newTotalBudget_flt = Float.parseFloat(newTotalBudget);
+        float newTotalWeeks_flt = Float.parseFloat(newTotalWeeks);
+        float newWeeklyBudget_flt = Float.parseFloat(newWeeklyBudget);
+
+        /**
+         * Fix math calculations
+         * If you press nextWeek without spending, it adds on or subracts wrong amount
+         */
+
+        newTotalBudget_flt += newWeeklyBudget_flt;
+        newTotalWeeks_flt--;
+        //newWeeklyBudget_flt = newTotalBudget_flt/newTotalWeeks_flt;
+
+        float nextTotalBudget = newTotalBudget_flt - newWeeklyBudget_flt;
+        //Toast.makeText(MainActivity.this, "+" +String.format("%.2f", newWeeklyBudget_flt), Toast.LENGTH_SHORT).show();
+
+        editor.putString("totalBudget", String.format("%.2f", nextTotalBudget));
+        editor.putString("totalWeeks", String.format("%.0f", newTotalWeeks_flt));
+        editor.putString("weeklyBudget", String.format("%.2f", newWeeklyBudget_flt));
+        editor.apply();
+
+        finish();
+        startActivity(getIntent());
     }
 
 }
