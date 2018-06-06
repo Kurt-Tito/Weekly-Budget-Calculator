@@ -19,6 +19,21 @@
         <activity
             android:name=".MainActivity">
         </activity>
+
+        <receiver
+            android:name=".AlarmReceiver">
+            <!--android:process=":remote">-->
+
+            <intent-filter>
+                <action android:name="com.mine.alarm"/>
+            </intent-filter>
+
+        </receiver>
+
+        <service
+            android:name=".MyService">
+        </service>
+
     </application>
 
 </manifest>

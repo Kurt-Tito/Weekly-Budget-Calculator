@@ -267,11 +267,11 @@
 
     </RelativeLayout>
 
-    <Button
-        android:id="@+id/btn_next"
-        android:layout_width="368dp"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorPrimaryDark"
-        android:text="Next Week" />
+    <!--<Button-->
+        <!--android:id="@+id/btn_next"-->
+        <!--android:layout_width="368dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:background="@color/colorPrimaryDark"-->
+        <!--android:text="Next Week" />-->
 
 </LinearLayout>

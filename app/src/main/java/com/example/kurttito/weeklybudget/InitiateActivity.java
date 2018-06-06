@@ -64,7 +64,6 @@ public class InitiateActivity extends AppCompatActivity {
                     editor.putString("totalWeeks", input_total_weeks.getText().toString());
                     editor.apply();
 
-                    Toast.makeText(InitiateActivity.this, "-" +String.format("%.2f", weeklyBudget_float), Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(InitiateActivity.this, MainActivity.class));
 
                 }catch (Exception e){
