@@ -1,18 +1,20 @@
 package com.example.kurttito.weeklybudget;
-
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.support.annotation.Nullable;
+
+//import android.os.AsyncTask;
+//import android.os.Build;
 
 /**
  * Created by TITO on 6/4/2018.
  */
 
 public class MyService extends IntentService{
+
+    public static boolean ONPAUSE = false;
 
     private MainActivity.BackgroundService bService;
     public SharedPreferences sharedPref;
@@ -44,6 +46,18 @@ public class MyService extends IntentService{
         editor.putString("totalWeeks", String.format("%.0f", newTotalWeeks_flt));
         editor.putString("weeklyBudget", String.format("%.2f", newWeeklyBudget_flt));
         editor.apply();
+
+        intent = new Intent(getBaseContext(), MainActivity.class);
+
+        if(ONPAUSE == false) {
+            startActivity(intent);
+        }
+        else
+        {
+            editor.putBoolean("restart", true);
+            editor.apply();
+        }
+
     }
 
     /**

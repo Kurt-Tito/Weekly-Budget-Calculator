@@ -10,49 +10,39 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.view.*;
-import android.widget.Toast;
-
 import java.util.Calendar;
-import java.util.Date;
+
+//import android.widget.EditText;
+//import android.widget.Toast;
+//import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button zero;
-    private Button one;
-    private Button two;
-    private Button three;
-    private Button four;
-    private Button five;
-    private Button six;
-    private Button seven;
-    private Button eight;
-    private Button nine;
-    private Button clear;
-    private Button enter;
-    private Button decimal;
+    //public static boolean ONPAUSE;
+
+    private Button zero, one, two, three, four, five,
+            six, seven, eight, nine, clear, enter, decimal;
 
     //private Button next;
 
     private TextView InputFeed;
-
     private TextView TotalBudget_Feed;
     private TextView TotalWeeks_Feed;
     private TextView WeeklyBudget_Feed;
 
-    String InputFeed_str;
-    float spent;
+    private String InputFeed_str;
+    private float spent;
 
-    float totalBudget_flt;
-    public static float weeklyBudget_float;
-    public static float newtotal;
+    private float totalBudget_flt;
+    private float weeklyBudget_float;
+    private float newtotal;
 
-    public SharedPreferences sharedPref;
-    public SharedPreferences.Editor editor;
+    private SharedPreferences sharedPref;
+    private SharedPreferences.Editor editor;
 
-    String totalWeeks;
+    private String totalWeeks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -232,103 +222,87 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
-        Calendar calendar = Calendar.getInstance();
-//        int day = calendar.get(Calendar.DAY_OF_WEEK);
-//        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-//        int minute = calendar.get(Calendar.MINUTE);
-
-        calendar.set(Calendar.DAY_OF_WEEK, 1);
-        calendar.set(Calendar.HOUR_OF_DAY, 23);
-        calendar.set(Calendar.MINUTE, 59);
-        calendar.set(Calendar.SECOND, 59);
-
-//        if(day == Calendar.SUNDAY && hour == 23 && minute == 59)
+//        Calendar calendar = Calendar.getInstance();
+//
+//        calendar.set(Calendar.DAY_OF_WEEK, 1);
+//        calendar.set(Calendar.HOUR_OF_DAY, 23);
+//        calendar.set(Calendar.MINUTE, 59);
+//        calendar.set(Calendar.SECOND, 59);
+//
+//        Intent intent = new Intent(this, AlarmReceiver.class);
+//        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+//        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+//        //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 1000 * 60 * 60 * 24 * 7, pendingIntent);
+//
+//        if(calendar.getTimeInMillis() >= System.currentTimeMillis())
 //        {
-//            nextWeek();
+//            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY * 7, pendingIntent);
+//
+//        }
+//        else if(calendar.getTimeInMillis() <= System.currentTimeMillis())
+//        {
+//            calendar.add(Calendar.DAY_OF_MONTH, 1);
+//            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmManager.INTERVAL_DAY * 7, pendingIntent);
+//
+//        }
+//        else
+//        {
+//            System.out.println("COULD NOT GET DATE/TIME ");
 //        }
 
-        Intent intent = new Intent(this, AlarmReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 1000 * 60 * 60 * 24 * 7, pendingIntent);
 
-        if(calendar.getTimeInMillis() >= System.currentTimeMillis())
-        {
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY * 7, pendingIntent);
+        boolean initApp = sharedPref.getBoolean("InitApplication", false);
 
-        }
-        else if(calendar.getTimeInMillis() <= System.currentTimeMillis())
-        {
-            calendar.add(Calendar.DAY_OF_MONTH, 1);
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmManager.INTERVAL_DAY * 7, pendingIntent);
+        if(!initApp){
+            System.out.println("INITIALIZING ALARM");
+            setAlarm();
 
-        }
-        else
-        {
-            System.out.println("COULD NOT GET DATE/TIME ");
+            editor.putBoolean("InitApplication", true);
+            editor.apply();
         }
 
-        //alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
     }
 
     @Override
-    public void onBackPressed()
-    {
+    public void onBackPressed() {
         ActivityCompat.finishAffinity(this);
     }
 
-//    @Override
-//    public void onResume() {
-//
-//        super.onResume();
-//
-//        //finish();
-//        //startActivity(new Intent(this, MainActivity.class));
-//
-//        TotalBudget_Feed.setText(String.format("$ %.2f", totalBudget_flt));
-//        TotalWeeks_Feed.setText(totalWeeks);
-//        WeeklyBudget_Feed.setText(String.format("$ %.2f", weeklyBudget_float));
-//    }
-
-//    @Override
-//    public void onStart() {
-//
-//        super.onStart();
-//
-//        TotalBudget_Feed.setText(String.format("$ %.2f", totalBudget_flt));
-//        TotalWeeks_Feed.setText(totalWeeks);
-//        WeeklyBudget_Feed.setText(String.format("$ %.2f", weeklyBudget_float));
-//
-//        //startActivity(getIntent());
-//    }
-
     @Override
     public void onPause(){
-        System.out.println("ON PAUSE");
         super.onPause();
+        MyService.ONPAUSE = true;
 
-        ActivityCompat.finishAffinity(MainActivity.this);
-
-//        TotalBudget_Feed.invalidate();
-//        TotalWeeks_Feed.invalidate();
-//        WeeklyBudget_Feed.invalidate();
+        System.out.println("ON PAUSE");
+        //ActivityCompat.finishAffinity(MainActivity.this);
     }
-//
+
     @Override
-    public void onResume(){
+    public void onResume()
+    {
         super.onResume();
+        MyService.ONPAUSE = false;
 
-        //System.out.println("ON PAUSE");
+        boolean restart = sharedPref.getBoolean("restart", false);
+
+        if(restart == true)
+        {
+            //startActivity(new Intent(getApplicationContext(), MainActivity.class));
+            startActivity(getIntent());
+        }
+
+        editor.putBoolean("restart", false);
+        editor.apply();
     }
 
-//    @Override
-//    public void onStart(){
-//        super.onStart();
-//
-//        TotalBudget_Feed.invalidate();
-//        TotalWeeks_Feed.invalidate();
-//        WeeklyBudget_Feed.invalidate();
-//    }
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        //MyService.ONPAUSE = true;
+//        editor.putBoolean("InitApplication", false);
+//        editor.apply();
+    }
 
     private void setupUIViews(){
         zero = (Button)findViewById(R.id.btn_0);
@@ -405,13 +379,43 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
 
         recreate();
+    }
 
-//        TotalBudget_Feed.setText(String.format("$ %.2f", newTotalBudget_flt));
-//        TotalWeeks_Feed.setText(String.format("%.0f", newTotalWeeks_flt));
-//        WeeklyBudget_Feed.setText(String.format("%.2f", newWeeklyBudget_flt));
+    public void setAlarm()
+    {
+        Calendar calendar = Calendar.getInstance();
+//        int day = calendar.get(Calendar.DAY_OF_WEEK);
+//        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+//        int minute = calendar.get(Calendar.MINUTE);
 
-//        finish();
-//        startActivity(getIntent());
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 1000 * 60 * 60 * 24 * 7, pendingIntent);
+
+        if(calendar.getTimeInMillis() >= System.currentTimeMillis())
+        {
+            System.out.println("NEXT WEEK");
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY * 7, pendingIntent);
+
+        }
+        else if(calendar.getTimeInMillis() < System.currentTimeMillis())
+        {
+            calendar.add(Calendar.DAY_OF_WEEK ,7);
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmManager.INTERVAL_DAY * 7, pendingIntent);
+
+        }
+        else
+        {
+            System.out.println("COULD NOT GET DATE/TIME ");
+        }
+
+        //alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
     }
 
     public class BackgroundService{

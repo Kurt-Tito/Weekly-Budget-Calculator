@@ -1,5 +1,4 @@
 package com.example.kurttito.weeklybudget;
-
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,18 +9,19 @@ import android.os.Bundle;
 import android.view.*;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
+
+//import android.widget.Toast;
 
 public class InitiateActivity extends AppCompatActivity {
 
     private Button next;
-    public static EditText input_total_budget;
-    public static EditText input_total_weeks;
+    private EditText input_total_budget;
+    private EditText input_total_weeks;
 
-    public static String totalBudget;
-    public static String totalWeeks;
+    private String totalBudget;
+    private String totalWeeks;
 
-    public static float totalBudget_float, totalWeek_float, weeklyBudget_float;
+    private float totalBudget_float, totalWeek_float, weeklyBudget_float;
     private SharedPreferences sharedPref;
     private SharedPreferences.Editor editor;
 
@@ -62,6 +62,7 @@ public class InitiateActivity extends AppCompatActivity {
                     editor = sharedPref.edit();
                     editor.putString("totalBudget", input_total_budget.getText().toString());
                     editor.putString("totalWeeks", input_total_weeks.getText().toString());
+
                     editor.apply();
 
                     startActivity(new Intent(InitiateActivity.this, MainActivity.class));
