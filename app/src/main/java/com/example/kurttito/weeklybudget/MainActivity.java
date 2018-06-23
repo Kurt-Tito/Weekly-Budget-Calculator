@@ -14,18 +14,10 @@ import android.widget.TextView;
 import android.view.*;
 import java.util.Calendar;
 
-//import android.widget.EditText;
-//import android.widget.Toast;
-//import java.util.Date;
-
 public class MainActivity extends AppCompatActivity {
-
-    //public static boolean ONPAUSE;
 
     private Button zero, one, two, three, four, five,
             six, seven, eight, nine, clear, enter, decimal;
-
-    //private Button next;
 
     private TextView InputFeed;
     private TextView TotalBudget_Feed;
@@ -33,16 +25,15 @@ public class MainActivity extends AppCompatActivity {
     private TextView WeeklyBudget_Feed;
 
     private String InputFeed_str;
-    private float spent;
+    private String totalWeeks;
 
+    private float spent;
     private float totalBudget_flt;
     private float weeklyBudget_float;
     private float newtotal;
 
     private SharedPreferences sharedPref;
     private SharedPreferences.Editor editor;
-
-    private String totalWeeks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -153,8 +144,6 @@ public class MainActivity extends AppCompatActivity {
         String totalBudget = sharedPref.getString("totalBudget", "");
         totalWeeks = sharedPref.getString("totalWeeks", "");
 
-        //String weeklyBudget;
-
         if (sharedPref.getString("weeklyBudget", "") == "") {
             weeklyBudget_float = Float.parseFloat(totalBudget) / Float.parseFloat(totalWeeks); // WEEKLY BUDGET
             editor.putString("weeklyBudget", String.valueOf(weeklyBudget_float));
@@ -165,7 +154,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         totalBudget_flt = Float.parseFloat(sharedPref.getString("totalBudget", ""));
-        //Toast.makeText(MainActivity.this, "-" +String.format("%.2f", weeklyBudget_float), Toast.LENGTH_SHORT).show();
 
         TotalBudget_Feed.setText(String.format("$ %.2f", totalBudget_flt)); //how to get public variable of another activity
         TotalWeeks_Feed.setText(totalWeeks);
@@ -215,66 +203,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        next.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View w) {
-//                nextWeek();
-//            }
-//        });
-
-//        Calendar calendar = Calendar.getInstance();
-//
-//        calendar.set(Calendar.DAY_OF_WEEK, 1);
-//        calendar.set(Calendar.HOUR_OF_DAY, 23);
-//        calendar.set(Calendar.MINUTE, 59);
-//        calendar.set(Calendar.SECOND, 59);
-//
-//        Intent intent = new Intent(this, AlarmReceiver.class);
-//        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-//        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-//        //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 1000 * 60 * 60 * 24 * 7, pendingIntent);
-//
-//        if(calendar.getTimeInMillis() >= System.currentTimeMillis())
-//        {
-//            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY * 7, pendingIntent);
-//
-//        }
-//        else if(calendar.getTimeInMillis() <= System.currentTimeMillis())
-//        {
-//            calendar.add(Calendar.DAY_OF_MONTH, 1);
-//            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmManager.INTERVAL_DAY * 7, pendingIntent);
-//
-//        }
-//        else
-//        {
-//            System.out.println("COULD NOT GET DATE/TIME ");
-//        }
-
-
         boolean initApp = sharedPref.getBoolean("InitApplication", false);
 
         if(!initApp){
-            System.out.println("INITIALIZING ALARM");
             setAlarm();
 
             editor.putBoolean("InitApplication", true);
             editor.apply();
         }
-
     }
 
     @Override
-    public void onBackPressed() {
-        ActivityCompat.finishAffinity(this);
-    }
-
-    @Override
-    public void onPause(){
+    public void onPause()
+    {
         super.onPause();
         MyService.ONPAUSE = true;
-
-        System.out.println("ON PAUSE");
-        //ActivityCompat.finishAffinity(MainActivity.this);
     }
 
     @Override
@@ -287,7 +230,6 @@ public class MainActivity extends AppCompatActivity {
 
         if(restart == true)
         {
-            //startActivity(new Intent(getApplicationContext(), MainActivity.class));
             startActivity(getIntent());
         }
 
@@ -299,9 +241,6 @@ public class MainActivity extends AppCompatActivity {
     public void onDestroy()
     {
         super.onDestroy();
-        //MyService.ONPAUSE = true;
-//        editor.putBoolean("InitApplication", false);
-//        editor.apply();
     }
 
     private void setupUIViews(){
@@ -319,12 +258,12 @@ public class MainActivity extends AppCompatActivity {
         decimal = (Button)findViewById(R.id.btn_decimal);
         enter = (Button)findViewById(R.id.btn_enter);
 
-        //next = (Button)findViewById(R.id.btn_next);
-
         InputFeed = (TextView) findViewById(R.id.TextView_InputFeed);
         TotalBudget_Feed = (TextView) findViewById(R.id.textView_totalBudget);
         TotalWeeks_Feed = (TextView)findViewById(R.id.textView_totalWeeks);
         WeeklyBudget_Feed = (TextView)findViewById(R.id.textView_weeklyBudget);
+
+        //next = (Button)findViewById(R.id.btn_next);
     }
 
     //Float Version of Spend Method
@@ -349,44 +288,9 @@ public class MainActivity extends AppCompatActivity {
         return String.format("$ %.2f", total);
     }
 
-    public void nextWeek()
-    {
-        String newTotalBudget = sharedPref.getString("totalBudget", "");
-        String newTotalWeeks = sharedPref.getString("totalWeeks", "");
-        String newWeeklyBudget = sharedPref.getString("weeklyBudget", "");
-
-        float newTotalBudget_flt = Float.parseFloat(newTotalBudget);
-        float newTotalWeeks_flt = Float.parseFloat(newTotalWeeks);
-        float newWeeklyBudget_flt = Float.parseFloat(newWeeklyBudget);
-
-        //Displays the remaining amount of the weekly spent to add to Total Budget
-        //Toast.makeText(MainActivity.this, "+" +String.format("%.2f", newWeeklyBudget_flt), Toast.LENGTH_SHORT).show();
-
-        /**
-         * Fix math calculations
-         * If you press nextWeek without spending, it adds on or subracts wrong amount
-         */
-
-        //newTotalBudget_flt = newWeeklyBudget_flt;
-        newTotalWeeks_flt--;
-        newWeeklyBudget_flt = newTotalBudget_flt/newTotalWeeks_flt;
-
-        //float nextTotalBudget = newTotalBudget_flt - newWeeklyBudget_flt;
-
-        editor.putString("totalBudget", String.format("%.2f", newTotalBudget_flt));
-        editor.putString("totalWeeks", String.format("%.0f", newTotalWeeks_flt));
-        editor.putString("weeklyBudget", String.format("%.2f", newWeeklyBudget_flt));
-        editor.apply();
-
-        recreate();
-    }
-
     public void setAlarm()
     {
         Calendar calendar = Calendar.getInstance();
-//        int day = calendar.get(Calendar.DAY_OF_WEEK);
-//        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-//        int minute = calendar.get(Calendar.MINUTE);
 
         calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
         calendar.set(Calendar.HOUR_OF_DAY, 23);
@@ -396,7 +300,6 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 1000 * 60 * 60 * 24 * 7, pendingIntent);
 
         if(calendar.getTimeInMillis() >= System.currentTimeMillis())
         {
@@ -413,43 +316,6 @@ public class MainActivity extends AppCompatActivity {
         else
         {
             System.out.println("COULD NOT GET DATE/TIME ");
-        }
-
-        //alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-    }
-
-    public class BackgroundService{
-        public void nextWeek(){
-            String newTotalBudget = sharedPref.getString("totalBudget", "");
-            String newTotalWeeks = sharedPref.getString("totalWeeks", "");
-            String newWeeklyBudget = sharedPref.getString("weeklyBudget", "");
-
-            float newTotalBudget_flt = Float.parseFloat(newTotalBudget);
-            float newTotalWeeks_flt = Float.parseFloat(newTotalWeeks);
-            float newWeeklyBudget_flt = Float.parseFloat(newWeeklyBudget);
-
-            //Displays the remaining amount of the weekly spent to add to Total Budget
-            //Toast.makeText(MainActivity.this, "+" +String.format("%.2f", newWeeklyBudget_flt), Toast.LENGTH_SHORT).show();
-
-            /**
-             * Fix math calculations
-             * If you press nextWeek without spending, it adds on or subracts wrong amount
-             */
-
-            //newTotalBudget_flt = newWeeklyBudget_flt;
-            newTotalWeeks_flt--;
-            newWeeklyBudget_flt = newTotalBudget_flt/newTotalWeeks_flt;
-
-            //float nextTotalBudget = newTotalBudget_flt - newWeeklyBudget_flt;
-
-            editor.putString("totalBudget", String.format("%.2f", newTotalBudget_flt));
-            editor.putString("totalWeeks", String.format("%.0f", newTotalWeeks_flt));
-            editor.putString("weeklyBudget", String.format("%.2f", newWeeklyBudget_flt));
-            editor.apply();
-
-            ActivityCompat.finishAffinity(MainActivity.this);
-            //finish();
-            //startActivity(new Intent(getApplicationContext(), MainActivity.class));
         }
     }
 

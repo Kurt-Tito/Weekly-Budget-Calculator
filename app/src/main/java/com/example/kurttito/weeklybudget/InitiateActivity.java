@@ -10,8 +10,6 @@ import android.view.*;
 import android.widget.Button;
 import android.widget.EditText;
 
-//import android.widget.Toast;
-
 public class InitiateActivity extends AppCompatActivity {
 
     private Button next;
@@ -38,6 +36,7 @@ public class InitiateActivity extends AppCompatActivity {
 
         if(totalBudget != "" || totalWeeks != "")
         {
+            finish();
             startActivity(new Intent(InitiateActivity.this, MainActivity.class));
         }
         else

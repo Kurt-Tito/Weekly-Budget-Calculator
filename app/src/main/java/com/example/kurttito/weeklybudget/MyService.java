@@ -15,8 +15,6 @@ import android.support.annotation.Nullable;
 public class MyService extends IntentService{
 
     public static boolean ONPAUSE = false;
-
-    private MainActivity.BackgroundService bService;
     public SharedPreferences sharedPref;
     public SharedPreferences.Editor editor;//private MainActivity mainActivity;
 
